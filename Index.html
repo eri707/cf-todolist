@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.3/css/bulma.min.css">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.12.1/css/all.css">
+    <style>
+        ul {
+            list-style: none;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container mt-5">
+        <div x-data="component()">
+            <div class="is-flex">
+                <h1 class="title mr-5">To-Do List</h1>
+                <a class="button is-danger" @click="deleteAll()">ClearList</a>
+            </div>
+            <div>
+                <div class="is-flex is-justify-content-space-between">
+                    <input class="input is-hovered is-size-5 mr-2" x-model="item" type="text" placeholder="Add an item"
+                         @keyup.enter="addItem()">
+                    <div class="is-flex is-justify-content-right">
+                        <a class="button is-primary m-1" @click="addItem()">Submit</a>
+                        <a class="button is-warning m-1" @click="item=null">Clear</a>
+                    </div>
+                </div>
+                <ul class="mt-5 ml-6">
+                    <template x-for="todoItem in todoItems">
+                        <li>
+                            <span class="checkbox ml-20 is-flex is-justify-content-space-between"  >
+                                <label style="cursor:pointer"  @click="addDoneItems(todoItem)">
+                                    <i class="far fa-square"></i>
+                                    <span x-text="todoItem" class="is-size-5 pl-2"></span>
+                                </label>
+                                <button class="button mr-6 is-small" @click="deleteItem(todoItem)">
+                                    <span class="icon is-small has-text-info ">
+                                        <i class="fas fa-trash-alt "></i>
+                                    </span>
+                                </button>
+                            </span>
+
+                        </li>
+                    </template>
+                </ul>
+                <hr>
+                <div x-show="open">
+                <template x-if="doneItems.length==1">
+                    <p  class="pl-5">1 Checked item</p>
+                </template>
+                <template x-if="doneItems.length>1">
+                    <p class="pl-5"><span x-text="doneItems.length" class="mr-1"></span>Checked items</p>
+                </template>
+                </div>
+                <ul class="mt-3 ml-6">
+                    <template x-for="doneItem in doneItems">
+                        <li>
+                            <span class="checkbox is-flex is-justify-content-space-between">
+                                <label style="cursor:pointer" @click="addtoDoItems(doneItem)">
+                                    <i class="far fa-check-square"></i>
+                                    <span x-text="doneItem" class="is-size-5 pl-2"></span>
+                                </label>
+                                <button class="button mr-6 is-small" @click="deleteDoneItem(doneItem)">
+                                    <span class="icon is-small has-text-info">
+                                        <i class="fas fa-trash-alt"></i>
+                                    </span>
+                                </button>
+                            </span>
+                           
+                        </li>
+                    </template>
+                </ul>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>
+<script>
+    function component() {
+        return {
+            item: '',
+            todoItems: [],
+            doneItems: [],
+            countDoneItems: 0,
+            open: false,
+            addItem() {
+                if(!this.item) {
+                    alert('Please add an item!');
+                    return;
+                }
+                if(this.item == this.todoItems.filter(i => i == this.item)) {
+                    alert('You already have a same item!');
+                    return;
+                }
+                this.todoItems.push(this.item);
+                this.item = null;
+            },
+            addDoneItems(todoItem) {
+                this.doneItems.push(todoItem);
+                
+                this.todoItems = this.todoItems.filter(e => e !== todoItem);
+                this.count();
+                this.open = true;
+            },
+            deleteItem(todoItem) {
+                this.todoItems = this.todoItems.filter(e => e !== todoItem);
+                this.count();
+            },
+            addtoDoItems(doneItem) {
+                this.todoItems.push(doneItem);
+                this.doneItems = this.doneItems.filter(e => e !== doneItem);
+                this.count();
+            },
+            deleteDoneItem(doneItem) {
+                this.doneItems = this.doneItems.filter(e => e !== doneItem);
+                this.count();
+            },
+            count() {
+                this.countDoneItems = this.doneItems.length;
+            },
+            deleteAll() {
+                this.item = '';
+                this.todoItems = [];
+                this.doneItems = [];
+                this.open = false;
+            }
+        }
+    }
+</script>
